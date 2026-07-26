@@ -1,0 +1,13 @@
+# OS junk
+.DS_Store          # macOS
+Thumbs.db          # Windows
+
+# Editor junk
+.vscode/           # VS Code (Mac)
+*.swp              # Neovim/Vim swap files
+*.swo
+*~                 # Vim backup files
+.netrwhist         # Neovim's netrwhist file if you use netrw
+
+# Linux desktop junk (if relevant on Nebora)
+.directory
