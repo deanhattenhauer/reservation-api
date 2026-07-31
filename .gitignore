@@ -14,3 +14,6 @@ Thumbs.db          # Windows
 
 # Linux desktop junk (if relevant on Nebora)
 .directory
+
+
+/reservation-api
