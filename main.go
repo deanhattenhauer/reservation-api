@@ -49,11 +49,15 @@ func main() {
 	// Without registered routes, all requests return 404 by default.
 	mux := http.NewServeMux()
 
-	//User endpoints
+	// User endpoints
 	mux.HandleFunc("POST /api/v1/users", apiCfg.handlerCreateUser)
 
 	// Login endpoints
 	mux.HandleFunc("POST /api/v1/login" ,apiCfg.handlerUserLogin)
+
+	// Token endpoints
+	mux.HandleFunc("POST /api/v1/refresh", apiCfg.handlerRefreshToken)
+	mux.HandleFunc("POST /api/v1/revoke", apiCfg.handlerRevokeToken)
 
 	// The mux is injected as the handler so all routing decisions
 	// flow through a single, centrally managed router.
