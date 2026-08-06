@@ -59,6 +59,9 @@ func main() {
 	mux.HandleFunc("POST /api/v1/refresh", apiCfg.handlerRefreshToken)
 	mux.HandleFunc("POST /api/v1/revoke", apiCfg.handlerRevokeToken)
 
+	// Category endpoints
+	mux.HandleFunc("POST /api/v1/categories", apiCfg.handlerCreateCategory)
+
 	// The mux is injected as the handler so all routing decisions
 	// flow through a single, centrally managed router.
 	s := &http.Server{
