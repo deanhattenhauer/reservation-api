@@ -52,6 +52,9 @@ func main() {
 	//User endpoints
 	mux.HandleFunc("POST /api/v1/users", apiCfg.handlerCreateUser)
 
+	// Login endpoints
+	mux.HandleFunc("POST /api/v1/login" ,apiCfg.handlerUserLogin)
+
 	// The mux is injected as the handler so all routing decisions
 	// flow through a single, centrally managed router.
 	s := &http.Server{
