@@ -7,3 +7,7 @@ VALUES (
     NOW()
 )
 RETURNING *;
+
+-- name: GetActiveCategories :many
+SELECT * FROM categories
+WHERE is_active = true;

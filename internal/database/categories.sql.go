@@ -32,3 +32,37 @@ func (q *Queries) CreateCategory(ctx context.Context, name string) (Category, er
 	)
 	return i, err
 }
+
+const getActiveCategories = `-- name: GetActiveCategories :many
+SELECT id, name, created_at, updated_at, is_active FROM categories
+WHERE is_active = true
+`
+
+func (q *Queries) GetActiveCategories(ctx context.Context) ([]Category, error) {
+	rows, err := q.db.QueryContext(ctx, getActiveCategories)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Category
+	for rows.Next() {
+		var i Category
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.IsActive,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

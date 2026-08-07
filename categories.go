@@ -66,3 +66,26 @@ func (cfg *apiConfig) handlerCreateCategory(w http.ResponseWriter, r *http.Reque
 		UpdatedAt: category.UpdatedAt,
 	})
 }
+
+func (cfg *apiConfig) handlerGetActiveCategories(w http.ResponseWriter, r *http.Request) {
+
+	activeCategories, err := cfg.dbQueries.GetActiveCategories(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "could not get active categories", err)
+		return
+	}
+
+	newSlice := []Category{}
+
+	//Map database.Category to API Category struct to ensure correct JSON key casing via struct tags.
+	for _, category := range activeCategories {
+		newSlice = append(newSlice, Category{
+		ID:        category.ID,
+		Name:      category.Name,
+		CreatedAt: category.CreatedAt,
+		UpdatedAt: category.UpdatedAt,
+		})
+	}
+
+	respondWithJSON(w, http.StatusOK, newSlice)
+}

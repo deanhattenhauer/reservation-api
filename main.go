@@ -61,6 +61,7 @@ func main() {
 
 	// Category endpoints
 	mux.HandleFunc("POST /api/v1/categories", apiCfg.handlerCreateCategory)
+	mux.HandleFunc("GET /api/v1/categories", apiCfg.handlerGetActiveCategories)
 
 	// The mux is injected as the handler so all routing decisions
 	// flow through a single, centrally managed router.
