@@ -58,3 +58,78 @@ func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationPa
 	)
 	return i, err
 }
+
+const getAllReservations = `-- name: GetAllReservations :many
+SELECT id, user_id, category_id, start_time, end_time, note, status, created_at, updated_at FROM reservations
+`
+
+func (q *Queries) GetAllReservations(ctx context.Context) ([]Reservation, error) {
+	rows, err := q.db.QueryContext(ctx, getAllReservations)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Reservation
+	for rows.Next() {
+		var i Reservation
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.CategoryID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.Note,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getReservationsByUser = `-- name: GetReservationsByUser :many
+SELECT id, user_id, category_id, start_time, end_time, note, status, created_at, updated_at FROM reservations
+WHERE user_id = $1
+`
+
+func (q *Queries) GetReservationsByUser(ctx context.Context, userID uuid.UUID) ([]Reservation, error) {
+	rows, err := q.db.QueryContext(ctx, getReservationsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Reservation
+	for rows.Next() {
+		var i Reservation
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.CategoryID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.Note,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

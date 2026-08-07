@@ -11,3 +11,10 @@ VALUES (
     NOW()
 )
 RETURNING *;
+
+-- name: GetReservationsByUser :many 
+SELECT * FROM reservations
+WHERE user_id = $1;
+
+-- name: GetAllReservations :many
+SELECT * FROM reservations;
