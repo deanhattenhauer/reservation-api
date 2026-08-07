@@ -63,6 +63,9 @@ func main() {
 	mux.HandleFunc("POST /api/v1/categories", apiCfg.handlerCreateCategory)
 	mux.HandleFunc("GET /api/v1/categories", apiCfg.handlerGetActiveCategories)
 
+	// Reservation endpoints
+	mux.HandleFunc("POST /api/v1/reservations", apiCfg.handlerCreateReservation)
+
 	// The mux is injected as the handler so all routing decisions
 	// flow through a single, centrally managed router.
 	s := &http.Server{
