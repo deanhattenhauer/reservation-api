@@ -13,6 +13,35 @@ import (
 	"github.com/google/uuid"
 )
 
+const cancelReservation = `-- name: CancelReservation :one
+UPDATE reservations
+SET status = 'cancelled', updated_at = NOW()
+WHERE id = $1 AND user_id = $2
+RETURNING id, user_id, category_id, start_time, end_time, note, status, created_at, updated_at
+`
+
+type CancelReservationParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
+
+func (q *Queries) CancelReservation(ctx context.Context, arg CancelReservationParams) (Reservation, error) {
+	row := q.db.QueryRowContext(ctx, cancelReservation, arg.ID, arg.UserID)
+	var i Reservation
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.CategoryID,
+		&i.StartTime,
+		&i.EndTime,
+		&i.Note,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createReservation = `-- name: CreateReservation :one
 INSERT INTO reservations (id, user_id, category_id, start_time, end_time, note, created_at, updated_at)
 VALUES (

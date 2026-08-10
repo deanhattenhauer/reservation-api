@@ -66,6 +66,7 @@ func main() {
 	// Reservation endpoints
 	mux.HandleFunc("POST /api/v1/reservations", apiCfg.handlerCreateReservation)
 	mux.HandleFunc("GET /api/v1/reservations", apiCfg.handlerGetReservationsByUser)
+	mux.HandleFunc("PATCH /api/v1/reservations/{reservationID}", apiCfg.handlerCancelReservation)
 
 	// Admin endpoints
 	mux.HandleFunc("GET /api/v1/admin/reservations", apiCfg.handlerGetAllReservations)
