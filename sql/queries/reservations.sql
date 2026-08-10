@@ -30,3 +30,11 @@ UPDATE reservations
 SET status = 'cancelled', updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: CheckReservationConflict :one
+SELECT EXISTS 
+(SELECT 1 FROM reservations 
+ WHERE category_id = $1 
+ AND status = 'confirmed' 
+ AND start_time < sqlc.arg(new_end_time) 
+ AND end_time > sqlc.arg(new_start_time));

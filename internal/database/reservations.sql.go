@@ -66,6 +66,28 @@ func (q *Queries) CancelReservationByAdmin(ctx context.Context, id uuid.UUID) (R
 	return i, err
 }
 
+const checkReservationConflict = `-- name: CheckReservationConflict :one
+SELECT EXISTS 
+(SELECT 1 FROM reservations 
+ WHERE category_id = $1 
+ AND status = 'confirmed' 
+ AND start_time < $2 
+ AND end_time > $3)
+`
+
+type CheckReservationConflictParams struct {
+	CategoryID   uuid.UUID
+	NewEndTime   time.Time
+	NewStartTime time.Time
+}
+
+func (q *Queries) CheckReservationConflict(ctx context.Context, arg CheckReservationConflictParams) (bool, error) {
+	row := q.db.QueryRowContext(ctx, checkReservationConflict, arg.CategoryID, arg.NewEndTime, arg.NewStartTime)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const createReservation = `-- name: CreateReservation :one
 INSERT INTO reservations (id, user_id, category_id, start_time, end_time, note, created_at, updated_at)
 VALUES (
