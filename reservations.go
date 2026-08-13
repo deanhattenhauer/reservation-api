@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -225,7 +226,7 @@ func (cfg *apiConfig) handlerCancelReservationByAdmin(w http.ResponseWriter, r *
 		return
 	}
 
-	_, role, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	adminUserID, role, err := auth.ValidateJWT(token, cfg.jwtSecret)
 	if err != nil {
 	respondWithError(w, http.StatusUnauthorized, "Couldn't validate token", err)
 	return
@@ -250,6 +251,13 @@ func (cfg *apiConfig) handlerCancelReservationByAdmin(w http.ResponseWriter, r *
 		respondWithError(w, http.StatusNotFound, "reservation not found", err)
 		return
 	}
+	
+	//Log when admin cancels a reservation
+	_, err = cfg.dbQueries.LogAdminCancelReservation(r.Context(), database.LogAdminCancelReservationParams{AdminUserID: adminUserID, TargetReservationID: uuid.NullUUID{UUID: reservationID, Valid: true}})
+	if err != nil {
+		slog.Error("could not log admin action", "error", err, "admin_id", adminUserID, "reservation_id", reservationID)
+	}
+
 
 	// Map database.Reservation to the API Reservation struct before responding.
 	// This decouples the JSON response shape from the internal database model.
