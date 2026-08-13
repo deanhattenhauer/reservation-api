@@ -71,6 +71,7 @@ func main() {
 	// Admin endpoints
 	mux.HandleFunc("GET /api/v1/admin/reservations", apiCfg.handlerGetAllReservations)
 	mux.HandleFunc("PATCH /api/v1/admin/reservations/{reservationID}", apiCfg.handlerCancelReservationByAdmin)
+	mux.HandleFunc("PATCH /api/v1/admin/categories/{categoryID}", apiCfg.handlerUpdateCategoryName)
 
 	// The mux is injected as the handler so all routing decisions
 	// flow through a single, centrally managed router.

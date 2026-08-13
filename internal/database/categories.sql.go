@@ -7,6 +7,8 @@ package database
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const createCategory = `-- name: CreateCategory :one
@@ -65,4 +67,29 @@ func (q *Queries) GetActiveCategories(ctx context.Context) ([]Category, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateCategoryName = `-- name: UpdateCategoryName :one
+UPDATE categories
+SET name = $1, updated_at = NOW()
+WHERE id = $2
+RETURNING id, name, created_at, updated_at, is_active
+`
+
+type UpdateCategoryNameParams struct {
+	Name string
+	ID   uuid.UUID
+}
+
+func (q *Queries) UpdateCategoryName(ctx context.Context, arg UpdateCategoryNameParams) (Category, error) {
+	row := q.db.QueryRowContext(ctx, updateCategoryName, arg.Name, arg.ID)
+	var i Category
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.IsActive,
+	)
+	return i, err
 }
