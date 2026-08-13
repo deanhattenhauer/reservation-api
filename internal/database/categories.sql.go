@@ -69,6 +69,31 @@ func (q *Queries) GetActiveCategories(ctx context.Context) ([]Category, error) {
 	return items, nil
 }
 
+const setCategoryActive = `-- name: SetCategoryActive :one
+UPDATE categories
+SET is_active = $1, updated_at = NOW()
+WHERE id = $2
+RETURNING id, name, created_at, updated_at, is_active
+`
+
+type SetCategoryActiveParams struct {
+	IsActive bool
+	ID       uuid.UUID
+}
+
+func (q *Queries) SetCategoryActive(ctx context.Context, arg SetCategoryActiveParams) (Category, error) {
+	row := q.db.QueryRowContext(ctx, setCategoryActive, arg.IsActive, arg.ID)
+	var i Category
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.IsActive,
+	)
+	return i, err
+}
+
 const updateCategoryName = `-- name: UpdateCategoryName :one
 UPDATE categories
 SET name = $1, updated_at = NOW()
