@@ -15,6 +15,7 @@ type Category struct {
 	Name 	  string 	`json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	IsActive  bool		`json:"is_active"`
 }
 
 func (cfg *apiConfig) handlerCreateCategory(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +66,7 @@ func (cfg *apiConfig) handlerCreateCategory(w http.ResponseWriter, r *http.Reque
 		Name:      category.Name,
 		CreatedAt: category.CreatedAt,
 		UpdatedAt: category.UpdatedAt,
+		IsActive: category.IsActive,
 	})
 }
 
@@ -85,6 +87,7 @@ func (cfg *apiConfig) handlerGetActiveCategories(w http.ResponseWriter, r *http.
 		Name:      category.Name,
 		CreatedAt: category.CreatedAt,
 		UpdatedAt: category.UpdatedAt,
+		IsActive: category.IsActive,
 		})
 	}
 

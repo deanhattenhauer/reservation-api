@@ -16,6 +16,7 @@ WHERE is_active = true;
 UPDATE categories
 SET name = $1, updated_at = NOW()
 WHERE id = $2
+RETURNING *;
 
 -- name: SetCategoryActive :one
 UPDATE categories
