@@ -18,6 +18,8 @@ type apiConfig struct {
 	dbQueries *database.Queries
 	// jwt secret for token creation
 	jwtSecret string
+	// captcha secret key
+	turnstileSecretKey string
 }
 
 func main() {
@@ -38,11 +40,14 @@ func main() {
 
 	port := os.Getenv("PORT")
 
+	turnstileSecretKey := os.Getenv("TURNSTILE_SECRET_KEY")
+
 	// apiCfg is the single source of truth for shared server state.
 	// Passed to handlers as a pointer receiver so all handlers share the same instance.
 	apiCfg := apiConfig{
 		dbQueries: dbQueries,
 		jwtSecret: jwtSecret,
+		turnstileSecretKey: turnstileSecretKey,
 	}
 
 	// ServeMux routes incoming requests to the appropriate handler.

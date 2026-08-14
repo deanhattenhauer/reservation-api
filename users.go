@@ -26,8 +26,9 @@ type User struct {
 func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) {
 	// parameters defines the expected shape of the request body.
 	type parameters struct {
-		Password string `json:"password"`
-		Email string `json:"email"`
+		Password     string `json:"password"`
+		Email 	 	 string `json:"email"`
+		CaptchaToken string `json:"captcha_token"`
 	}
 
 	// Decode the request body — returns 500 if JSON is malformed or wrong types.
@@ -39,6 +40,17 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	
+	success, err := VerifyCaptcha(params.CaptchaToken, cfg.turnstileSecretKey)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't verify captcha", err)
+		return
+	}
+	if !success {
+		respondWithError(w, http.StatusUnauthorized, "Couldn't verify captcha", nil)
+		return
+	}
+
+
 	hash, err := auth.HashPassword(params.Password)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't hash password", err)
