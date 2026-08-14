@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/deanhattenhauer/reservation-api/internal/auth"
 	"github.com/deanhattenhauer/reservation-api/internal/database"
 	"github.com/google/uuid"
 )
@@ -24,29 +23,10 @@ func (cfg *apiConfig) handlerCreateCategory(w http.ResponseWriter, r *http.Reque
 		Name string `json:"name"`
 	}
 
-	// Get the token from the request headers
-	token, err := auth.GetBearerToken(r.Header)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Unable to get token header", err)
-		return
-	}
-
-	// Authenticate user with token
-	_, role, err := auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-	respondWithError(w, http.StatusUnauthorized, "Couldn't validate token", err)
-	return
-		}
-
-	if role != "admin"{
-		respondWithError(w, http.StatusForbidden, "Unauthorized access", nil)
-		return
-	}
-
 	// Decode the request body — returns 500 if JSON is malformed or wrong types.
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
-	err = decoder.Decode(&params)
+	err := decoder.Decode(&params)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
 		return
@@ -100,29 +80,10 @@ func (cfg *apiConfig) handlerUpdateCategoryName(w http.ResponseWriter, r *http.R
 		Name string `json:"name"`
 	}
 
-	// Get the token from the request headers
-	token, err := auth.GetBearerToken(r.Header)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Unable to get token header", err)
-		return
-	}
-
-	// Authenticate user with token
-	_, role, err := auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-	respondWithError(w, http.StatusUnauthorized, "Couldn't validate token", err)
-	return
-		}
-
-	if role != "admin"{
-		respondWithError(w, http.StatusForbidden, "Unauthorized access", nil)
-		return
-	}
-
 	// Decode the request body — returns 500 if JSON is malformed or wrong types.
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
-	err = decoder.Decode(&params)
+	err := decoder.Decode(&params)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
 		return
@@ -158,29 +119,10 @@ func (cfg *apiConfig) handlerSetCategoryActive(w http.ResponseWriter, r *http.Re
 		IsActive bool `json:"is_active"`
 	}
 
-	// Get the token from the request headers
-	token, err := auth.GetBearerToken(r.Header)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Unable to get token header", err)
-		return
-	}
-
-	// Authenticate user with token
-	_, role, err := auth.ValidateJWT(token, cfg.jwtSecret)
-	if err != nil {
-	respondWithError(w, http.StatusUnauthorized, "Couldn't validate token", err)
-	return
-		}
-
-	if role != "admin"{
-		respondWithError(w, http.StatusForbidden, "Unauthorized access", nil)
-		return
-	}
-
 	// Decode the request body — returns 500 if JSON is malformed or wrong types.
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
-	err = decoder.Decode(&params)
+	err := decoder.Decode(&params)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
 		return

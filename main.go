@@ -60,7 +60,7 @@ func main() {
 	mux.HandleFunc("POST /api/v1/revoke", apiCfg.handlerRevokeToken)
 
 	// Category endpoints
-	mux.HandleFunc("POST /api/v1/categories", apiCfg.handlerCreateCategory)
+	mux.Handle("POST /api/v1/categories", apiCfg.middlewareVerifyAdmin(http.HandlerFunc(apiCfg.handlerCreateCategory)))
 	mux.HandleFunc("GET /api/v1/categories", apiCfg.handlerGetActiveCategories)
 
 	// Reservation endpoints
@@ -69,11 +69,11 @@ func main() {
 	mux.HandleFunc("PATCH /api/v1/reservations/{reservationID}", apiCfg.handlerCancelReservation)
 
 	// Admin endpoints
-	mux.HandleFunc("GET /api/v1/admin/reservations", apiCfg.handlerGetAllReservations)
+	mux.Handle("GET /api/v1/admin/reservations", apiCfg.middlewareVerifyAdmin(http.HandlerFunc(apiCfg.handlerGetAllReservations)))
 	mux.HandleFunc("PATCH /api/v1/admin/reservations/{reservationID}", apiCfg.handlerCancelReservationByAdmin)
-	mux.HandleFunc("PATCH /api/v1/admin/categories/{categoryID}", apiCfg.handlerUpdateCategoryName)
-	mux.HandleFunc("PATCH /api/v1/admin/categories/{categoryID}/active", apiCfg.handlerSetCategoryActive)
-	mux.HandleFunc("PATCH /api/v1/admin/users/{userID}", apiCfg.handlerUpdateUserRole)
+	mux.Handle("PATCH /api/v1/admin/categories/{categoryID}", apiCfg.middlewareVerifyAdmin(http.HandlerFunc(apiCfg.handlerUpdateCategoryName)))
+	mux.Handle("PATCH /api/v1/admin/categories/{categoryID}/active", apiCfg.middlewareVerifyAdmin(http.HandlerFunc(apiCfg.handlerSetCategoryActive)))
+	mux.Handle("PATCH /api/v1/admin/users/{userID}", apiCfg.middlewareVerifyAdmin(http.HandlerFunc(apiCfg.handlerUpdateUserRole)))
 
 	// The mux is injected as the handler so all routing decisions
 	// flow through a single, centrally managed router.
