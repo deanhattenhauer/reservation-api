@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/deanhattenhauer/reservation-api/internal/database"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 )
 
 // apiConfig holds shared server state accessible across all request handlers.
@@ -80,11 +82,24 @@ func main() {
 	mux.Handle("PATCH /api/v1/admin/categories/{categoryID}/active", apiCfg.middlewareVerifyAdmin(http.HandlerFunc(apiCfg.handlerSetCategoryActive)))
 	mux.Handle("PATCH /api/v1/admin/users/{userID}", apiCfg.middlewareVerifyAdmin(http.HandlerFunc(apiCfg.handlerUpdateUserRole)))
 
-	// The mux is injected as the handler so all routing decisions
-	// flow through a single, centrally managed router.
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:5500"},
+		AllowedMethods: []string{"GET", "POST", "PATCH", "DELETE"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+		MaxAge:         300,
+	})
+	handler := c.Handler(mux)
+
+	// The CORS-wrapped mux is injected as the handler so all routing decisions
+	// flow through a single, centrally managed router, with CORS headers applied
+	// to every response before it reaches the client.
 	s := &http.Server{
-		Addr:    ":" + port,
-		Handler: mux,
+		Addr:              ":" + port,
+		Handler:           handler,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      15 * time.Second,
+		IdleTimeout:       60 * time.Second,
 	}
 
 	// Logged before blocking so the operator knows the server is ready.
