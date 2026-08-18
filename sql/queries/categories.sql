@@ -12,6 +12,10 @@ RETURNING *;
 SELECT * FROM categories
 WHERE is_active = true;
 
+-- name: GetCategoryName :one
+SELECT * FROM categories
+WHERE id = $1;
+
 -- name: UpdateCategoryName :one
 UPDATE categories
 SET name = $1, updated_at = NOW()

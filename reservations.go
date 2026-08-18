@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -71,6 +72,31 @@ func (cfg *apiConfig) handlerCreateReservation(w http.ResponseWriter, r *http.Re
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create category", err)
 		return
 	}
+
+	// Get user email for confirmation email
+	userEmail, err := cfg.dbQueries.GetUserByID(r.Context(), userID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't fetch email", err)
+		return
+	}
+
+	// Fetch category name for confirmation email
+	categoryName, err := cfg.dbQueries.GetCategoryName(r.Context(), params.CategoryID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't fetch name", err)
+		return
+	}
+
+	// Send creation confirmation email
+	subject := fmt.Sprintf("Your %s reservation is confirmed", categoryName.Name)
+	html := fmt.Sprintf(
+    	"<h1>Your reservation is confirmed!</h1><p><strong>Details regarding your %s reservation:</strong></p><ul><li>Date: %s - %s</li><li>Note: %s</li></ul>",
+		categoryName.Name,
+    	reservation.StartTime.Format("January 2, 2006 3:04 PM"),
+    	reservation.EndTime.Format("January 2, 2006 3:04 PM"),
+		reservation.Note.String,
+	)
+	go SendEmail(cfg.resendAPIKey, userEmail.Email, subject, html)
 
 	// Map database.Reservation to the API Reservation struct before responding.
 	// This decouples the JSON response shape from the internal database model.
@@ -186,6 +212,31 @@ func (cfg *apiConfig) handlerCancelReservation(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	// Fetch user email for cancellation email
+	userEmail, err := cfg.dbQueries.GetUserByID(r.Context(), userID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't fetch email", err)
+		return
+	}
+
+	// Fetch category name for cancellation email
+	categoryName, err := cfg.dbQueries.GetCategoryName(r.Context(), reservation.CategoryID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't fetch name", err)
+		return
+	}
+
+	// Send cancellation email
+	subject := fmt.Sprintf("Your %s reservation has been cancelled", categoryName.Name)
+	html := fmt.Sprintf(
+    	"<h1>Your reservation has been cancelled.</h1><p><strong>Details regarding your %s cancellation:</strong></p><ul><li>Date: %s - %s</li><li>Note: %s</li></ul>",
+		categoryName.Name,
+    	reservation.StartTime.Format("January 2, 2006 3:04 PM"),
+    	reservation.EndTime.Format("January 2, 2006 3:04 PM"),
+		reservation.Note.String,
+	)
+	go SendEmail(cfg.resendAPIKey, userEmail.Email, subject, html)
+
 	// Map database.Reservation to the API Reservation struct before responding.
 	// This decouples the JSON response shape from the internal database model.
 	respondWithJSON(w, http.StatusOK, Reservation{
@@ -241,6 +292,30 @@ func (cfg *apiConfig) handlerCancelReservationByAdmin(w http.ResponseWriter, r *
 		slog.Error("could not log admin action", "error", err, "admin_id", adminUserID, "reservation_id", reservationID)
 	}
 
+	// Fetch user email for cancellation email
+	userEmail, err := cfg.dbQueries.GetUserByID(r.Context(), reservation.UserID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't fetch email", err)
+		return
+	}
+
+	// Fetch category name for cancellation email
+	categoryName, err := cfg.dbQueries.GetCategoryName(r.Context(), reservation.CategoryID)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't fetch name", err)
+		return
+	}
+
+	// Send cancellation email
+	subject := fmt.Sprintf("Your %s reservation has been cancelled", categoryName.Name)
+	html := fmt.Sprintf(
+    	"<h1>Your reservation has been cancelled.</h1><p><strong>Details regarding your %s cancellation:</strong></p><ul><li>Date: %s - %s</li><li>Note: %s</li></ul>",
+		categoryName.Name,
+    	reservation.StartTime.Format("January 2, 2006 3:04 PM"),
+    	reservation.EndTime.Format("January 2, 2006 3:04 PM"),
+		reservation.Note.String,
+	)
+	go SendEmail(cfg.resendAPIKey, userEmail.Email, subject, html)
 
 	// Map database.Reservation to the API Reservation struct before responding.
 	// This decouples the JSON response shape from the internal database model.

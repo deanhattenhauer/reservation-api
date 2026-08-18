@@ -64,6 +64,11 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// Send creation confirmation email
+	subject := "Account Created"
+	html := "<h1>Your account was created successfully.</h1> \n<p>Welcome, and thank you for joining!</p>"
+	go SendEmail(cfg.resendAPIKey, user.Email, subject, html)
+
 	// Map database.User to the API User struct before responding.
 	// This decouples the JSON response shape from the internal database model.
 	respondWithJSON(w, http.StatusCreated, User{

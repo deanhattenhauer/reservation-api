@@ -69,6 +69,24 @@ func (q *Queries) GetActiveCategories(ctx context.Context) ([]Category, error) {
 	return items, nil
 }
 
+const getCategoryName = `-- name: GetCategoryName :one
+SELECT id, name, created_at, updated_at, is_active FROM categories
+WHERE id = $1
+`
+
+func (q *Queries) GetCategoryName(ctx context.Context, id uuid.UUID) (Category, error) {
+	row := q.db.QueryRowContext(ctx, getCategoryName, id)
+	var i Category
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.IsActive,
+	)
+	return i, err
+}
+
 const setCategoryActive = `-- name: SetCategoryActive :one
 UPDATE categories
 SET is_active = $1, updated_at = NOW()
