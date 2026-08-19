@@ -126,6 +126,15 @@
         margin-bottom: 2.5rem;
       }
 
+      /* note text inside a reservation card — same look as .subtitle,
+         but without the landing page's large bottom margin */
+      .card-note {
+        color: var(--cream-dim);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin: 0;
+      }
+
       /* --- Landing view --- */
       #landing-view {
         text-align: justify;
@@ -148,7 +157,7 @@
         background: var(--card);
         border: 1px solid var(--card-border);
         border-radius: 14px;
-        padding: 2rem 1.75rem;
+        padding: 1.5rem 1.75rem 1.25rem;
         position: relative;
         box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.6);
       }
@@ -170,6 +179,11 @@
       }
       .ticket-card::after {
         right: -12px;
+      }
+
+      /* spacing between multiple stacked ticket cards on the dashboard */
+      #reservations-list .ticket-card {
+        margin-top: 1.5rem;
       }
 
       form {
@@ -541,6 +555,30 @@
         }
       });
 
+      // ---- Categories ----
+      // Public endpoint, no auth needed. Returns the raw category list
+      // so callers (like loadReservations) can look up names by id.
+      async function loadCategories() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/v1/categories`, {
+            method: "GET",
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            resultBox.textContent = `Error: ${data.error || "Something went wrong"}`;
+            return [];
+          }
+
+          return data;
+        } catch (err) {
+          resultBox.textContent = `Network error: ${err.message}`;
+          return [];
+        }
+      }
+
+      // ---- Reservations ----
       async function loadReservations() {
         const token = localStorage.getItem("access_token");
         try {
@@ -558,7 +596,37 @@
             return;
           }
 
-          resultBox.textContent = JSON.stringify(data, null, 2);
+          const categories = await loadCategories();
+
+          const cardsHTML = data
+            .map((reservation) => {
+              const category = categories.find(
+                (c) => c.id === reservation.category_id,
+              );
+
+              const startDate = new Date(reservation.start_time);
+              const startDateString = startDate.toLocaleDateString("en-US");
+              const startTimeString = startDate.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              });
+
+              const endDate = new Date(reservation.end_time);
+              const endDateString = endDate.toLocaleDateString("en-US");
+              const endTimeString = endDate.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              });
+
+              return `<div class="ticket-card">
+                <div class="eyebrow">${category ? category.name : "Reservation"}</div>
+                <p>${startDateString} &middot; ${startTimeString} &ndash; ${endTimeString}</p>
+                ${reservation.note ? `<p class="card-note">${reservation.note}</p>` : ""}
+              </div>`;
+            })
+            .join("");
+
+          document.getElementById("reservations-list").innerHTML = cardsHTML;
         } catch (err) {
           resultBox.textContent = `Network error: ${err.message}`;
         }
