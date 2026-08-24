@@ -13,7 +13,7 @@ This is a personal project, no live deployment (yet), runs locally.
 - **Categories**: admin-managed, soft-delete via active/inactive toggle (never hard-deleted, so reservation history stays intact)
 - **Admin tooling**: role promotion, cancel any reservation, audit logging on admin actions
 - **CAPTCHA**: Cloudflare Turnstile verification on signup
-- **Email notifications**: signup confirmation, reservation created, reservation cancelled — sent asynchronously via [Resend](https://resend.com)
+- **Email notifications**: signup confirmation, reservation created, reservation cancelled. Sent asynchronously via [Resend](https://resend.com)
 - **CORS + timeouts**: configured for a known front-end origin, with server-side timeouts to prevent resource exhaustion
 
 ---
@@ -109,7 +109,7 @@ A few decisions worth calling out, since they weren't defaults, they were chosen
 
 - **Soft deletes everywhere.** Categories and reservations are never hard-deleted; foreign keys use `ON DELETE RESTRICT` to guarantee history can't silently disappear. `refresh_tokens`, by contrast, use `ON DELETE CASCADE`; a revoked or expired token has no historical value once its owner is gone.
 - **Conflict detection.** Reservations are checked for time-overlap within the same category before creation, using a database-level `EXISTS` query rather than fetching and comparing in application code.
-- **Audit logging.** Admin actions that affect another user's data (like cancelling their reservation) are logged to a dedicated table, separate from application logs — an audit trail answers "who did what," while logs are for debugging.
+- **Audit logging.** Admin actions that affect another user's data (like cancelling their reservation) are logged to a dedicated table, separate from application logs. An audit trail answers "who did what," while logs are for debugging.
 - **Async email.** Notifications are sent in a goroutine so a slow email provider never blocks the API response.
 
 ---
