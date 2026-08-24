@@ -24,16 +24,16 @@ A small themed front end (`index.html`) walks through the full user flow — no 
 
 <table>
 <tr>
-<td><strong>Landing page</strong><br><img src="screenshots/landing.png" width="280"></td>
-<td><strong>Sign up (Turnstile CAPTCHA)</strong><br><img src="screenshots/signup.png" width="280"></td>
+<td valign="top"><strong>Landing page</strong><br><br><img src="screenshots/landing.png" width="280"></td>
+<td valign="top"><strong>Sign up (Turnstile CAPTCHA)</strong><br><br><img src="screenshots/signup.png" width="280"></td>
 </tr>
 <tr>
-<td><strong>Log in</strong><br><img src="screenshots/login.png" width="280"></td>
-<td><strong>Dashboard — no reservations yet</strong><br><img src="screenshots/dashboard-empty.png" width="280"></td>
+<td valign="top"><strong>Log in</strong><br><br><img src="screenshots/login.png" width="280"></td>
+<td valign="top"><strong>Dashboard — no reservations yet</strong><br><br><img src="screenshots/dashboard-empty.png" width="280"></td>
 </tr>
 <tr>
-<td><strong>Creating a reservation</strong><br><img src="screenshots/create-reservation.png" width="280"></td>
-<td><strong>Dashboard — real reservations</strong><br><img src="screenshots/dashboard-full.png" width="280"></td>
+<td valign="top"><strong>Creating a reservation</strong><br><br><img src="screenshots/create-reservation.png" width="280"></td>
+<td valign="top"><strong>Dashboard — real reservations</strong><br><br><img src="screenshots/dashboard-full.png" width="280"></td>
 </tr>
 </table>
 
