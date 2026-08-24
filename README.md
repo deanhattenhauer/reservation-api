@@ -22,14 +22,23 @@ This is a personal project — no live deployment, runs locally.
 
 A small themed front end (`index.html`) walks through the full user flow — no framework, just HTML/CSS/JS talking directly to the API.
 
-|                                                                |                                                                |
-| -------------------------------------------------------------- | -------------------------------------------------------------- |
-| ![Landing page](screenshots/landing.png)                       | ![Sign up, with Turnstile CAPTCHA](screenshots/signup.png)     |
-| Landing page                                                   | Sign up (Turnstile CAPTCHA)                                    |
-| ![Log in](screenshots/login.png)                               | ![Empty dashboard state](screenshots/dashboard-empty.png)      |
-| Log in                                                         | Dashboard — no reservations yet                                |
-| ![Create reservation form](screenshots/create-reservation.png) | ![Dashboard with reservations](screenshots/dashboard-full.png) |
-| Creating a reservation                                         | Dashboard — real reservations                                  |
+**Landing page**
+![Landing page](screenshots/landing.png)
+
+**Sign up (Turnstile CAPTCHA)**
+![Sign up, with Turnstile CAPTCHA](screenshots/signup.png)
+
+**Log in**
+![Log in](screenshots/login.png)
+
+**Dashboard — no reservations yet**
+![Empty dashboard state](screenshots/dashboard-empty.png)
+
+**Creating a reservation**
+![Create reservation form](screenshots/create-reservation.png)
+
+**Dashboard — real reservations**
+![Dashboard with reservations](screenshots/dashboard-full.png)
 
 ---
 
